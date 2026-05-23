@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sağlıkta Yapay Zeka — Kapsamlı Araç Rehberi</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --bg2: #111827;
+    --bg3: #1a2234;
+    --surface: #1e2d42;
+    --border: rgba(100,180,255,0.12);
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --accent3: #34d399;
+    --text: #e2eaf4;
+    --muted: #7a92ad;
+    --heading: #Syne, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HERO */
+  header {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px 60px;
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.2);
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 68px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto 40px;
+    font-weight: 300;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* NAV / FILTER */
+  .filter-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,14,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+  }
+
+  .filter-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover { color: var(--text); border-color: rgba(100,180,255,0.3); }
+  .filter-btn.active {
+    background: rgba(56,189,248,0.12);
+    border-color: rgba(56,189,248,0.4);
+    color: var(--accent);
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    margin-left: auto;
+    position: relative;
+  }
+
+  .search-wrap input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 14px 7px 36px;
+    border-radius: 100px;
+    width: 200px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap input:focus { border-color: rgba(56,189,248,0.4); }
+  .search-wrap input::placeholder { color: var(--muted); }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 14px;
+    pointer-events: none;
+  }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* CATEGORY SECTION */
+  .category {
+    margin-bottom: 56px;
+  }
+
+  .cat-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .cat-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .cat-title-wrap h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+
+  .cat-title-wrap p {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  /* TOOL CARD */
+  .tool-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s;
+    pointer-events: none;
+    border-radius: 16px;
+  }
+
+  .tool-card:hover {
+    border-color: rgba(56,189,248,0.25);
+    transform: translateY(-2px);
+  }
+
+  .tool-card:hover::before { opacity: 1; }
+
+  .tool-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .tool-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .tool-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .tool-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .tool-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .feature-pill {
+    font-size: 11px;
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  /* COLORS PER CATEGORY */
+  .c-blue .cat-icon-wrap { background: rgba(56,189,248,0.1); color: var(--accent); }
+  .c-blue .tool-logo { background: rgba(56,189,248,0.12); color: var(--accent); }
+  .c-blue .tag { background: rgba(56,189,248,0.1); color: var(--accent); }
+
+  .c-purple .cat-icon-wrap { background: rgba(129,140,248,0.1); color: var(--accent2); }
+  .c-purple .tool-logo { background: rgba(129,140,248,0.12); color: var(--accent2); }
+  .c-purple .tag { background: rgba(129,140,248,0.1); color: var(--accent2); }
+
+  .c-green .cat-icon-wrap { background: rgba(52,211,153,0.1); color: var(--accent3); }
+  .c-green .tool-logo { background: rgba(52,211,153,0.12); color: var(--accent3); }
+  .c-green .tag { background: rgba(52,211,153,0.1); color: var(--accent3); }
+
+  .c-coral .cat-icon-wrap { background: rgba(251,113,133,0.1); color: #fb7185; }
+  .c-coral .tool-logo { background: rgba(251,113,133,0.12); color: #fb7185; }
+  .c-coral .tag { background: rgba(251,113,133,0.1); color: #fb7185; }
+
+  .c-amber .cat-icon-wrap { background: rgba(251,191,36,0.1); color: #fbbf24; }
+  .c-amber .tool-logo { background: rgba(251,191,36,0.12); color: #fbbf24; }
+  .c-amber .tag { background: rgba(251,191,36,0.1); color: #fbbf24; }
+
+  .c-teal .cat-icon-wrap { background: rgba(45,212,191,0.1); color: #2dd4bf; }
+  .c-teal .tool-logo { background: rgba(45,212,191,0.12); color: #2dd4bf; }
+  .c-teal .tag { background: rgba(45,212,191,0.1); color: #2dd4bf; }
+
+  /* HIDDEN */
+  .tool-card.hidden, .category.empty { display: none; }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  footer strong { color: var(--text); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .tool-card {
+    animation: fadeUp 0.4s ease both;
+  }
+
+  /* NO RESULTS */
+  .no-results {
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--muted);
+    display: none;
+  }
+
+  .no-results.show { display: block; }
+  .no-results h3 { font-family: 'Syne', sans-serif; color: var(--text); margin-bottom: 8px; }
+
+  /* SCROLL TOP */
+  .scroll-top {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 200;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(56,189,248,0.3);
+  }
+
+  .scroll-top.show { opacity: 1; transform: translateY(0); }
+  .scroll-top:hover { transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero-tag">2025 — Güncel Rehber</div>
+  <h1>Sağlıkta <span>Yapay Zeka</span><br>Araçları</h1>
+  <p class="hero-sub">Hasta kayıtlarından tıbbi görüntülemeye, klinik karar desteğinden sağlık yönetimine — kapsamlı araç rehberi.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">24+</div><div class="stat-label">Araç</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Kategori</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Ücretsiz Rehber</div></div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <div class="filter-inner">
+    <button class="filter-btn active" data-cat="all">Tümü</button>
+    <button class="filter-btn" data-cat="veri">Hasta Verisi</button>
+    <button class="filter-btn" data-cat="analiz">Analiz</button>
+    <button class="filter-btn" data-cat="karar">Karar Destek</button>
+    <button class="filter-btn" data-cat="goruntu">Görüntüleme</button>
+    <button class="filter-btn" data-cat="nlp">NLP & Dokümantasyon</button>
+    <button class="filter-btn" data-cat="yonetim">Sağlık Yönetimi</button>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search" placeholder="Araç ara...">
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="no-results" id="noResults">
+    <h3>Sonuç bulunamadı</h3>
+    <p>Farklı bir arama terimi deneyin.</p>
+  </div>
+
+  <!-- HASTA VERİSİ -->
+  <div class="category c-blue" data-category="veri">
+    <div class="cat-head">
+      <div class="cat-icon-wrap">🗄️</div>
+      <div class="cat-title-wrap">
+        <h2>Hasta Kayıtları & Veri Yönetimi</h2>
+        <p>EHR entegrasyonu, FHIR/HL7 standartları, güvenli veri depolama</p>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" data-name="aws healthlake" data-cat="veri">
+        <div class="tool-top">
+          <div class="tool-logo">AH</div>
+          <span class="tag">Bulut</span>
+        </div>
+        <div class="tool-name">AWS HealthLake</div>
+        <div class="tool-desc">FHIR tabanlı hasta verisi depolama, sorgulama ve makine öğrenmesi analizi. Amazon'un sağlık odaklı bulut çözümü.</div>
+        <div class="tool-features">
+          <span class="feature-pill">FHIR R4</span>
+          <span class="feature-pill">ML Entegrasyonu</span>
+          <span class="feature-pill">HIPAA Uyumlu</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="google cloud healthcare api" data-cat="veri">
+        <div class="tool-top">
+          <div class="tool-logo">GH</div>
+          <span class="tag">Bulut</span>
+        </div>
+        <div class="tool-name">Google Cloud Healthcare API</div>
+        <div class="tool-desc">HL7v2, FHIR, DICOM destekli sağlık verisi entegrasyonu ve birlikte çalışabilirlik çözümü.</div>
+        <div class="tool-features">
+          <span class="feature-pill">DICOM</span>
+          <span class="feature-pill">HL7v2</span>
+          <span class="feature-pill">BigQuery</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="epic mychart ai" data-cat="veri">
+        <div class="tool-top">
+          <div class="tool-logo">EP</div>
+          <span class="tag">EHR</span>
+        </div>
+        <div class="tool-name">Epic MyChart AI</div>
+        <div class="tool-desc">Dünya genelinde en yaygın EHR sistemine YZ entegrasyonu. Hasta riski tahminleme ve otomatik uyarılar.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Risk Skoru</span>
+          <span class="feature-pill">Hasta Portalı</span>
+          <span class="feature-pill">Entegrasyon</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="cerner oracle health" data-cat="veri">
+        <div class="tool-top">
+          <div class="tool-logo">CE</div>
+          <span class="tag">EHR</span>
+        </div>
+        <div class="tool-name">Cerner (Oracle Health)</div>
+        <div class="tool-desc">Oracle tarafından desteklenen klinik veri yönetimi platformu. Tahminleyici analitik ve popülasyon sağlığı.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Popülasyon Sağlığı</span>
+          <span class="feature-pill">Analitik</span>
+          <span class="feature-pill">Interoperabilite</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALİZ -->
+  <div class="category c-green" data-category="analiz">
+    <div class="cat-head">
+      <div class="cat-icon-wrap">📊</div>
+      <div class="cat-title-wrap">
+        <h2>Veri Analizi & Raporlama</h2>
+        <p>Klinik performans, KPI panelleri, epidemiyoloji ve gerçek dünya kanıtı</p>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" data-name="tableau healthcare" data-cat="analiz">
+        <div class="tool-top">
+          <div class="tool-logo">TB</div>
+          <span class="tag">Analitik</span>
+        </div>
+        <div class="tool-name">Tableau Healthcare</div>
+        <div class="tool-desc">Hasta akışı, klinik performans, yatak doluluk oranları ve sağlık KPI'larının interaktif görselleştirmesi.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Dashboard</span>
+          <span class="feature-pill">Gerçek Zamanlı</span>
+          <span class="feature-pill">Salesforce Entegrasyonu</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="power bi azure health" data-cat="analiz">
+        <div class="tool-top">
+          <div class="tool-logo">PB</div>
+          <span class="tag">Analitik</span>
+        </div>
+        <div class="tool-name">Power BI + Azure Health</div>
+        <div class="tool-desc">Microsoft ekosistemi içinde sağlık KPI panelleri, otomatik raporlama ve Azure ML entegrasyonu.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Otomatik Rapor</span>
+          <span class="feature-pill">Azure ML</span>
+          <span class="feature-pill">DAX</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="palantir foundry" data-cat="analiz">
+        <div class="tool-top">
+          <div class="tool-logo">PL</div>
+          <span class="tag">Büyük Veri</span>
+        </div>
+        <div class="tool-name">Palantir Foundry</div>
+        <div class="tool-desc">Büyük ölçekli klinik veri analizi, epidemiyoloji ve ilaç geliştirme süreçleri için veri operasyon platformu.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Veri Füzyonu</span>
+          <span class="feature-pill">Epidemiyoloji</span>
+          <span class="feature-pill">Güvenlik</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="flatiron health" data-cat="analiz">
+        <div class="tool-top">
+          <div class="tool-logo">FL</div>
+          <span class="tag">Onkoloji</span>
+        </div>
+        <div class="tool-name">Flatiron Health</div>
+        <div class="tool-desc">Onkoloji odaklı gerçek dünya kanıtı analizi. Kanser tedavi sonuçlarını ve klinik çalışma verilerini analiz eder.</div>
+        <div class="tool-features">
+          <span class="feature-pill">RWE</span>
+          <span class="feature-pill">Onkoloji</span>
+          <span class="feature-pill">FDA Destekli</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KLİNİK KARAR DESTEK -->
+  <div class="category c-purple" data-category="karar">
+    <div class="cat-head">
+      <div class="cat-icon-wrap">🧠</div>
+      <div class="cat-title-wrap">
+        <h2>Klinik Karar Destek</h2>
+        <p>Ayırıcı tanı, risk tahmini, kanıta dayalı rehberlik ve LLM tabanlı klinik asistan</p>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" data-name="isabel ddx" data-cat="karar">
+        <div class="tool-top">
+          <div class="tool-logo">IS</div>
+          <span class="tag">Tanı</span>
+        </div>
+        <div class="tool-name">Isabel DDx</div>
+        <div class="tool-desc">Semptomlara göre kapsamlı ayırıcı tanı listesi oluşturan klinik karar destek sistemi. 20+ yıllık deneyim.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Ayırıcı Tanı</span>
+          <span class="feature-pill">EHR Entegrasyonu</span>
+          <span class="feature-pill">Nadır Hastalık</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="uptodate wolters kluwer" data-cat="karar">
+        <div class="tool-top">
+          <div class="tool-logo">UD</div>
+          <span class="tag">Rehber</span>
+        </div>
+        <div class="tool-name">UpToDate</div>
+        <div class="tool-desc">Dünyada en çok kullanılan klinik karar destek aracı. Kanıta dayalı tedavi rehberleri ve ilaç etkileşim kontrolü.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Kanıta Dayalı</span>
+          <span class="feature-pill">İlaç Etkileşimi</span>
+          <span class="feature-pill">CME Kredisi</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="sepsis watch" data-cat="karar">
+        <div class="tool-top">
+          <div class="tool-logo">SW</div>
+          <span class="tag">Risk</span>
+        </div>
+        <div class="tool-name">Sepsis Watch</div>
+        <div class="tool-desc">Derin öğrenme ile sepsis erken uyarı sistemi. EHR verilerini anlık olarak izleyerek yüksek riskli hastaları tespit eder.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Erken Uyarı</span>
+          <span class="feature-pill">Derin Öğrenme</span>
+          <span class="feature-pill">Gerçek Zamanlı</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="google med-palm 2" data-cat="karar">
+        <div class="tool-top">
+          <div class="tool-logo">MP</div>
+          <span class="tag">LLM</span>
+        </div>
+        <div class="tool-name">Google Med-PaLM 2</div>
+        <div class="tool-desc">Tıbbi sorulara uzman düzeyinde yanıt veren büyük dil modeli. USMLE sınavında uzman doktor performansına ulaştı.</div>
+        <div class="tool-features">
+          <span class="feature-pill">LLM</span>
+          <span class="feature-pill">Çok Dilli</span>
+          <span class="feature-pill">USMLE Geçer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIBBİ GÖRÜNTÜLEME -->
+  <div class="category c-coral" data-category="goruntu">
+    <div class="cat-head">
+      <div class="cat-icon-wrap">🔬</div>
+      <div class="cat-title-wrap">
+        <h2>Tıbbi Görüntüleme</h2>
+        <p>Radyoloji, patoloji, CT/MRI analizi ve acil anomali tespiti</p>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" data-name="aidoc" data-cat="goruntu">
+        <div class="tool-top">
+          <div class="tool-logo">AI</div>
+          <span class="tag">Radyoloji</span>
+        </div>
+        <div class="tool-name">Aidoc</div>
+        <div class="tool-desc">Radyoloji görüntülerinde acil anomali tespiti. PE, intrakranyal kanama, vertebral kırık gibi kritik bulguları dakikalar içinde işaretler.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Acil Uyarı</span>
+          <span class="feature-pill">CT/MRI</span>
+          <span class="feature-pill">FDA Onaylı</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="zebra medical vision" data-cat="goruntu">
+        <div class="tool-top">
+          <div class="tool-logo">ZM</div>
+          <span class="tag">Radyoloji</span>
+        </div>
+        <div class="tool-name">Zebra Medical Vision</div>
+        <div class="tool-desc">CT, MRI ve mamografi görüntülerini otomatik analiz eden platform. Karaciğer yağlanması, kemik dansitesi, kardiyak risk.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Mamografi</span>
+          <span class="feature-pill">Kemik Dansitesi</span>
+          <span class="feature-pill">Kardiyak</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="viz.ai" data-cat="goruntu">
+        <div class="tool-top">
+          <div class="tool-logo">VZ</div>
+          <span class="tag">Acil</span>
+        </div>
+        <div class="tool-name">Viz.ai</div>
+        <div class="tool-desc">İnme, PE ve aort diseksiyonu tespiti için görüntü analizi ve anlık uyarı sistemi. Acil müdahale süresini kısaltır.</div>
+        <div class="tool-features">
+          <span class="feature-pill">İnme Tespiti</span>
+          <span class="feature-pill">Anlık Uyarı</span>
+          <span class="feature-pill">FDA 510(k)</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="paige ai" data-cat="goruntu">
+        <div class="tool-top">
+          <div class="tool-logo">PA</div>
+          <span class="tag">Patoloji</span>
+        </div>
+        <div class="tool-name">Paige AI</div>
+        <div class="tool-desc">Patoloji görüntülerinde kanser tespiti. Prostat kanseri tanısında patolog performansını geçen ilk FDA onaylı YZ.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Dijital Patoloji</span>
+          <span class="feature-pill">FDA Onaylı</span>
+          <span class="feature-pill">Prostat Kanseri</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NLP & DOKÜMANTASYON -->
+  <div class="category c-teal" data-category="nlp">
+    <div class="cat-head">
+      <div class="cat-icon-wrap">💬</div>
+      <div class="cat-title-wrap">
+        <h2>Doğal Dil İşleme & Dokümantasyon</h2>
+        <p>Sesli not alma, klinik metin analizi, ICD kodlama ve otomatik transkript</p>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" data-name="nuance dax microsoft" data-cat="nlp">
+        <div class="tool-top">
+          <div class="tool-logo">ND</div>
+          <span class="tag">Ses/NLP</span>
+        </div>
+        <div class="tool-name">Nuance DAX</div>
+        <div class="tool-desc">Microsoft destekli sesli klinik not oluşturma sistemi. Hasta görüşmesini gerçek zamanlı transkript ederek SOAP notu oluşturur.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Gerçek Zamanlı</span>
+          <span class="feature-pill">EHR Entegrasyonu</span>
+          <span class="feature-pill">SOAP Notu</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="suki ai" data-cat="nlp">
+        <div class="tool-top">
+          <div class="tool-logo">SK</div>
+          <span class="tag">Ses/NLP</span>
+        </div>
+        <div class="tool-name">Suki AI</div>
+        <div class="tool-desc">Doktor-hasta görüşmesinden otomatik SOAP notu oluşturan yapay zeka asistanı. Belgeleme süresini %72 azaltır.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Otomatik Not</span>
+          <span class="feature-pill">Sesli Komut</span>
+          <span class="feature-pill">Epic Entegrasyonu</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="amazon comprehend medical" data-cat="nlp">
+        <div class="tool-top">
+          <div class="tool-logo">CM</div>
+          <span class="tag">NLP</span>
+        </div>
+        <div class="tool-name">Amazon Comprehend Medical</div>
+        <div class="tool-desc">Tıbbi metinden ICD-10 kodu, ilaç adı, doz, hastalık ve anatomi bilgisi çıkaran NLP servisi.</div>
+        <div class="tool-features">
+          <span class="feature-pill">ICD-10 Kodlama</span>
+          <span class="feature-pill">İlaç Çıkarımı</span>
+          <span class="feature-pill">API</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="abridge" data-cat="nlp">
+        <div class="tool-top">
+          <div class="tool-logo">AB</div>
+          <span class="tag">NLP</span>
+        </div>
+        <div class="tool-name">Abridge</div>
+        <div class="tool-desc">Hasta-klinisyen diyaloğunu özetleyen ve yapılandırılmış klinik nota dönüştüren platform. UCSF ve Mayo Clinic kullanıyor.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Diyalog Özeti</span>
+          <span class="feature-pill">Çok Dilli</span>
+          <span class="feature-pill">Hasta Dostu</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAĞLIK YÖNETİMİ -->
+  <div class="category c-amber" data-category="yonetim">
+    <div class="cat-head">
+      <div class="cat-icon-wrap">🏥</div>
+      <div class="cat-title-wrap">
+        <h2>Sağlık Yönetimi</h2>
+        <p>Hasta triajı, randevu, operasyon otomasyonu ve sağlık botu</p>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" data-name="microsoft azure health bot" data-cat="yonetim">
+        <div class="tool-top">
+          <div class="tool-logo">HB</div>
+          <span class="tag">Bot</span>
+        </div>
+        <div class="tool-name">Azure Health Bot</div>
+        <div class="tool-desc">Microsoft'un sağlık odaklı konuşma botu. Hasta triajı, semptom değerlendirme, randevu yönetimi ve sigorta sorgulama.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Semptom Triage</span>
+          <span class="feature-pill">Randevu</span>
+          <span class="feature-pill">HIPAA</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="olive ai" data-cat="yonetim">
+        <div class="tool-top">
+          <div class="tool-logo">OL</div>
+          <span class="tag">Otomasyon</span>
+        </div>
+        <div class="tool-name">Olive AI</div>
+        <div class="tool-desc">Hastane operasyonlarını otomatikleştiren RPA+YZ platformu. Fatura işleme, ön yetkilendirme ve klinik iş akışları.</div>
+        <div class="tool-features">
+          <span class="feature-pill">RPA</span>
+          <span class="feature-pill">Faturalama</span>
+          <span class="feature-pill">İş Akışı</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="infermedica" data-cat="yonetim">
+        <div class="tool-top">
+          <div class="tool-logo">IN</div>
+          <span class="tag">Triyaj</span>
+        </div>
+        <div class="tool-name">Infermedica</div>
+        <div class="tool-desc">Akıllı semptom değerlendirici ve hasta yönlendirme motoru. Hastaları doğru bakım seviyesine yönlendirir, gereksiz acil başvurularını azaltır.</div>
+        <div class="tool-features">
+          <span class="feature-pill">Semptom Checker</span>
+          <span class="feature-pill">API</span>
+          <span class="feature-pill">50+ Dil</span>
+        </div>
+      </div>
+      <div class="tool-card" data-name="gyant" data-cat="yonetim">
+        <div class="tool-top">
+          <div class="tool-logo">GY</div>
+          <span class="tag">Yönetim</span>
+        </div>
+        <div class="tool-name">Gyant</div>
+        <div class="tool-desc">Klinik iş akışı otomasyonu ve hasta katılım platformu. Klinisyenlere bakım noktasında rehberlik eder.</div>
+        <div class="tool-features">
+          <span class="feature-pill">İş Akışı</span>
+          <span class="feature-pill">Hasta Katılımı</span>
+          <span class="feature-pill">Klinik Rehber</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>Sağlıkta Yapay Zeka Araçları Rehberi &nbsp;·&nbsp; <strong>2025</strong> &nbsp;·&nbsp; Tüm araçlar kamuya açık kaynaklardan derlenmiştir.</p>
+  <p style="margin-top:8px; font-size:12px;">Bu rehber bilgilendirme amaçlıdır. Araçların kullanımı için ilgili kurumların lisans ve uyumluluk gereksinimlerini kontrol ediniz.</p>
+</footer>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Yukarı git">↑</button>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const categories = document.querySelectorAll('.category');
+  const cards = document.querySelectorAll('.tool-card');
+  const searchInput = document.getElementById('search');
+  const noResults = document.getElementById('noResults');
+  const scrollTopBtn = document.getElementById('scrollTop');
+
+  let activeFilter = 'all';
+  let searchQuery = '';
+
+  function applyFilters() {
+    let visibleCount = 0;
+
+    categories.forEach(cat => {
+      const catType = cat.dataset.category;
+      const catMatch = activeFilter === 'all' || activeFilter === catType;
+      let catHasVisible = false;
+
+      cat.querySelectorAll('.tool-card').forEach(card => {
+        const nameMatch = card.dataset.name.includes(searchQuery.toLowerCase());
+        const show = catMatch && nameMatch;
+        card.classList.toggle('hidden', !show);
+        if (show) { catHasVisible = true; visibleCount++; }
+      });
+
+      cat.classList.toggle('empty', !catHasVisible);
+    });
+
+    noResults.classList.toggle('show', visibleCount === 0);
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.cat;
+      applyFilters();
+    });
+  });
+
+  searchInput.addEventListener('input', e => {
+    searchQuery = e.target.value;
+    applyFilters();
+  });
+
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('show', window.scrollY > 400);
+  });
+</script>
+</body>
+</html>
